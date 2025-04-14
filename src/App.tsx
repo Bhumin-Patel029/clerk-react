@@ -15,7 +15,7 @@ export default function App() {
         </div>
       </SignedIn>
     </header>
-    <h1>Hello My name is BHumi</h1>
+    <h1>Hello My name is Bhumin</h1>
     </>
   )
 }
