@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom';
 export default function RideTakerForm() {
   const [name, setName] = useState('');
   const [rides, setRides] = useState(1);
+  const [date, setdate] = useState('');
   const [house, setHouse] = useState('');
   const navigate = useNavigate();
 
@@ -43,6 +44,15 @@ export default function RideTakerForm() {
           required
         />
 
+        <input 
+          type="date"
+          placeholder="date"
+          value={date}
+
+          onChange={(e) => setdate(e.target.value)}
+          className="w-full p-2 rounded border"
+          required />
+
         <select
           value={house}
           onChange={(e) => setHouse(e.target.value)}
@@ -57,6 +67,7 @@ export default function RideTakerForm() {
           <option value="House E">Towers 17</option>
           <option value="House H">Others</option>
         </select>
+        
 
         <button
           type="submit"
@@ -64,6 +75,7 @@ export default function RideTakerForm() {
         >
           Submit
         </button>
+        
       </form>
     </div>
   );
