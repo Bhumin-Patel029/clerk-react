@@ -1,20 +1,37 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-
+import { supabase } from '../supabase';
 
 export default function RideTakerForm() {
   const [name, setName] = useState('');
   const [rides, setRides] = useState(1);
-  const [date, setdate] = useState('');
+  const [date, setDate] = useState('');
   const [house, setHouse] = useState('');
   const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-   // alert(`Name: ${name}, Rides: ${rides}, House: ${house}`);
+    // Insert into Supabase
+    const { data, error } = await supabase
+      .from('ride_requests')
+      .insert([
+        {
+          taker_name: name,
+          rides_needed: rides,
+          house,
+          date,
+        }
+      ])
+      .select()
+      .single();
 
-    // Redirect to dashboard
-    navigate('/dashboard');
+    if (error) {
+      alert('Error posting ride request: ' + error.message);
+      return;
+    }
+
+    // Redirect to dashboard with request ID
+    navigate('/dashboard', { state: { id: data.id } });
   };
 
   return (
@@ -24,7 +41,6 @@ export default function RideTakerForm() {
     >
       <form onSubmit={handleSubmit} className="bg-white bg-opacity-90 p-6 rounded-xl shadow-lg w-full max-w-md space-y-4">
         <h2 className="text-2xl font-bold text-center mb-4">Ride Taker Form</h2>
-
         <input
           type="text"
           placeholder="Your Name"
@@ -33,7 +49,6 @@ export default function RideTakerForm() {
           className="w-full p-2 rounded border"
           required
         />
-
         <input
           type="number"
           placeholder="Number of Rides Needed"
@@ -43,16 +58,14 @@ export default function RideTakerForm() {
           className="w-full p-2 rounded border"
           required
         />
-
-        <input 
+        <input
           type="date"
           placeholder="date"
           value={date}
-
-          onChange={(e) => setdate(e.target.value)}
+          onChange={(e) => setDate(e.target.value)}
           className="w-full p-2 rounded border"
-          required />
-
+          required
+        />
         <select
           value={house}
           onChange={(e) => setHouse(e.target.value)}
@@ -67,15 +80,12 @@ export default function RideTakerForm() {
           <option value="House E">Towers 17</option>
           <option value="House H">Others</option>
         </select>
-        
-
         <button
           type="submit"
           className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition"
         >
           Submit
         </button>
-        
       </form>
     </div>
   );

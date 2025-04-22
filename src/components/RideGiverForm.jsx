@@ -1,21 +1,47 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { supabase } from '../supabase';
+import { useUser } from '@clerk/clerk-react';
 
 export default function RideGiverForm() {
   const [name, setName] = useState('');
   const [contact, setContact] = useState('');
-  const [house, setHouse] = useState('');
   const [readyBy, setReadyBy] = useState('');
-  const [ridesOffered, setRidesOffered] = useState(1);
-
+  const location = useLocation();
   const navigate = useNavigate();
+  const { isLoaded, isSignedIn, user } = useUser(); // <-- useUser, not useClerk
+  const requestId = location.state?.requestId;
 
-  const handleSubmit = (e) => {
+  if (!isLoaded) return <div>Loading...</div>;
+  if (!isSignedIn) return <div>Please sign in to book a ride.</div>;
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    alert(
-      `Name: ${name}, Contact: ${contact}, House: ${house}, Ready By: ${readyBy}, Rides Offered: ${ridesOffered}`
-    );
-    navigate('/giverdashboard');
+    if (!requestId) {
+      alert('No ride request selected.');
+      return;
+    }
+
+    // user.id is the Clerk user ID
+    const { data, error } = await supabase
+      .from('ride_requests')
+      .update({
+        giver_name: name,
+        giver_contact: contact,
+        ready_by: readyBy,
+        booked_at: new Date().toISOString(),
+        giver_id: user.id,
+      })
+      .eq('id', requestId)
+      .select()
+      .single();
+
+    if (error) {
+      alert('Error booking ride: ' + error.message);
+      return;
+    }
+
+    navigate('/giverdashboard', { state: { request: data } });
   };
 
   return (
@@ -27,8 +53,7 @@ export default function RideGiverForm() {
         onSubmit={handleSubmit}
         className="bg-white bg-opacity-90 p-6 rounded-xl shadow-lg w-full max-w-md space-y-4"
       >
-        <h2 className="text-2xl font-bold text-center mb-4">Ride Giver Form</h2>
-
+        <h2 className="text-2xl font-bold text-center mb-4">Ride Giver Booking</h2>
         <input
           type="text"
           placeholder="Your Name"
@@ -37,7 +62,6 @@ export default function RideGiverForm() {
           className="w-full p-2 rounded border"
           required
         />
-
         <input
           type="tel"
           placeholder="Contact Number"
@@ -46,22 +70,6 @@ export default function RideGiverForm() {
           className="w-full p-2 rounded border"
           required
         />
-
-        <select
-          value={house}
-          onChange={(e) => setHouse(e.target.value)}
-          className="w-full p-2 rounded border"
-          required
-        >
-          <option value="">Select Your House</option>
-          <option value="House A">47 Elgin Drive</option>
-          <option value="House B">56 Elgin Drive</option>
-          <option value="House C">64 Elgin Drive</option>
-          <option value="House D">Towers 16</option>
-          <option value="House E">Towers 17</option>
-          <option value="House H">Others</option>
-        </select>
-
         <input
           type="time"
           value={readyBy}
@@ -69,22 +77,11 @@ export default function RideGiverForm() {
           className="w-full p-2 rounded border"
           required
         />
-
-        <input
-          type="number"
-          placeholder="Number of Rides Offered"
-          value={ridesOffered}
-          min="1"
-          onChange={(e) => setRidesOffered(e.target.value)}
-          className="w-full p-2 rounded border"
-          required
-        />
-
         <button
           type="submit"
           className="bg-orange-500 text-white px-4 py-2 rounded hover:bg-orange-600 transition"
         >
-          Submit
+          Book Ride
         </button>
       </form>
     </div>

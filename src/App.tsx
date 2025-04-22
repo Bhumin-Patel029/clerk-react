@@ -61,7 +61,7 @@ export default function App() {
       <SignedIn>
         {!showRideTakerForm ? (
           <div className="flex flex-col sm:flex-row justify-center items-center gap-4 mt-8 w-full max-w-md mx-auto px-2">
-  <Link to="/ride-giver" className="w-full">
+  <Link to="/ride-giver-list" className="w-full">
     <button className="w-full py-4 text-lg font-semibold bg-orange-500 text-white rounded-xl hover:bg-orange-600 hover:scale-105 active:scale-100 transition-all duration-200 shadow-md">
       🚗 Ride Giver
     </button>

@@ -5,6 +5,8 @@ import './index.css';
 import { ClerkProvider } from '@clerk/clerk-react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 // @ts-ignore
+import RideGiverList from './components/RideGiverList'; // import it
+// @ts-ignore
 import RideTakerForm from './components/RideTakerForm'; // import RideTakerForm (JSX)
 // @ts-ignore
 import Dashboard from './components/Dashboard';
@@ -23,14 +25,17 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
     <ClerkProvider publishableKey={PUBLISHABLE_KEY}>
       <Router>
-      <Routes>
-      <Route path="/" element={<App />} />
-      <Route path="/ride-taker" element={<RideTakerForm />} />
-      <Route path="/dashboard" element={<Dashboard />} />
-      <Route path="/ride-giver" element={<RideGiverForm />} />
-      <Route path="/giverdashboard" element={<GiverDashboard />} />
 
-    </Routes>
+
+<Routes>
+  <Route path="/" element={<App />} />
+  <Route path="/ride-taker" element={<RideTakerForm />} />
+  <Route path="/dashboard" element={<Dashboard />} />
+  <Route path="/ride-giver-list" element={<RideGiverList />} />
+  <Route path="/ride-giver" element={<RideGiverForm />} />
+  <Route path="/giverdashboard" element={<GiverDashboard />} />
+</Routes>
+
       </Router>
     </ClerkProvider>
   </React.StrictMode>
