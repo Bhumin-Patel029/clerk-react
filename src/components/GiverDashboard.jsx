@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { supabase } from '../supabase.js';
+import { supabase } from '../supabase';
 import { useUser } from '@clerk/clerk-react';
 
 export default function RideGiverDashboard() {
@@ -8,8 +8,7 @@ export default function RideGiverDashboard() {
   const { isLoaded, isSignedIn, user } = useUser();
 
   useEffect(() => {
-    if (!isLoaded) return; // Wait for Clerk to load
-    if (!isSignedIn) {
+    if (!isLoaded || !isSignedIn) {
       setLoading(false);
       return;
     }
@@ -27,7 +26,6 @@ export default function RideGiverDashboard() {
           giver_contact
         `)
         .eq('giver_id', user.id)
-        .order('created_at', { ascending: false })
         .limit(1)
         .single();
 
@@ -35,12 +33,7 @@ export default function RideGiverDashboard() {
         console.error('Error fetching request:', error);
       }
 
-      if (data) {
-        setRequest(data);
-        console.log("Data fetched for Ride Giver:", data);
-      } else {
-        console.log("No ride requests found for this giver.");
-      }
+      if (data) setRequest(data);
       setLoading(false);
     };
 
@@ -53,16 +46,14 @@ export default function RideGiverDashboard() {
   if (!request) return <div>No booking found for you.</div>;
 
   return (
-    <div className="min-h-screen bg-orange-50 flex flex-col items-center justify-center p-6">
-      <div className="bg-white p-6 rounded-xl shadow-lg w-full max-w-md space-y-4 text-center">
-        <h2 className="text-3xl font-bold text-orange-600">Ride Booked!</h2>
-        <p className="text-lg">🧍 Taker: <strong>{request.taker_name}</strong></p>
-        <p className="text-lg">🏠 House: <strong>{request.house}</strong></p>
-        <p className="text-lg">🚗 Rides Needed: <strong>{request.rides_needed}</strong></p>
-        <p className="text-lg">📅 Date: <strong>{request.date}</strong></p>
-        <p className="text-lg">⏰ Ready By: <strong>{request.ready_by}</strong></p>
-        <p className="text-lg">📞 Your Contact: <strong>{request.giver_contact}</strong></p>
-      </div>
+    <div>
+      <h2>Your Booked Ride</h2>
+      <p>Taker Name: {request.taker_name}</p>
+      <p>House: {request.house}</p>
+      <p>Date: {request.date}</p>
+      <p>Rides Needed: {request.rides_needed}</p>
+      <p>Ready By: {request.ready_by}</p>
+      <p>Your Contact: {request.giver_contact}</p>
     </div>
   );
 }
