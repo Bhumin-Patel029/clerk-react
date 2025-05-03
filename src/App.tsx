@@ -9,7 +9,7 @@ export default function App() {
   const [showRideTakerForm, setShowRideTakerForm] = useState(false);
   
 
-  const handleRideTakerClick = () => setShowRideTakerForm(true);
+  // const handleRideTakerClick = () => setShowRideTakerForm(true);
 
   const handleFormSubmit = () => {
     setShowRideTakerForm(false);
